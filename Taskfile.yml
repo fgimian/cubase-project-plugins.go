@@ -1,0 +1,27 @@
+version: "3"
+
+vars:
+  VERSION:
+    sh: git describe --always --tags --dirty
+
+tasks:
+  format:
+    desc: Format the codebase.
+    cmds:
+      - gofumpt.exe -l -w .
+      - golines.exe -l -w .
+
+  build:
+    desc: Builds the application binary.
+    cmds:
+      - go build -buildvcs=true -ldflags="-s -w -X main.version={{.VERSION}}"
+
+  lint:
+    desc: Runs linters on the codebase.
+    cmds:
+      - golangci-lint run ./...
+
+  test:
+    desc: Run all unit tests.
+    cmds:
+      - go test -race ./...

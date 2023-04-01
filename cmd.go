@@ -19,11 +19,16 @@ var (
 	ErrWalkDir        = errors.New("unable to walk one or more directories requested")
 )
 
-var configPath string
+// See https://github.com/golang/go/issues/50603 for a better way of determining the version
+// in future.
+var (
+	version    string
+	configPath string
+)
 
 var rootCmd = &cobra.Command{
 	Use:     "cubase-project-plugins [flags] [project path]...",
-	Version: "1.0.0",
+	Version: version,
 	Short: "Displays all plugins used in your Cubase projects along with the Cubase version " +
 		"the project was created with.",
 	Args: cobra.MinimumNArgs(1),
