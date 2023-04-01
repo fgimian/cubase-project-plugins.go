@@ -68,6 +68,7 @@ var rootCmd = &cobra.Command{
 					fmt.Println()
 					heading.Printf("Path: %s", path)
 					fmt.Println()
+
 					fmt.Println()
 					subHeading.Printf(
 						"%s %s (%s)",
@@ -91,23 +92,25 @@ var rootCmd = &cobra.Command{
 						displayPlugins = append(displayPlugins, plugin)
 					}
 
+					if len(displayPlugins) == 0 {
+						return nil
+					}
+
 					slices.SortFunc(displayPlugins, func(a, b Plugin) bool {
 						return strings.ToLower(a.Name) < strings.ToLower(b.Name)
 					})
 
-					if len(displayPlugins) > 0 {
-						fmt.Println()
-						for _, plugin := range displayPlugins {
-							pluginCounts[plugin]++
-
-							if is64Bit {
-								pluginCounts64[plugin]++
-							} else {
-								pluginCounts32[plugin]++
-							}
-
-							fmt.Printf("    > %s : %s\n", plugin.Guid, plugin.Name)
+					fmt.Println()
+					for _, plugin := range displayPlugins {
+						if is64Bit {
+							pluginCounts64[plugin]++
+						} else {
+							pluginCounts32[plugin]++
 						}
+
+						pluginCounts[plugin]++
+
+						fmt.Printf("    > %s : %s\n", plugin.Guid, plugin.Name)
 					}
 
 					return nil
@@ -119,68 +122,9 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		if len(pluginCounts32) != 0 {
-			fmt.Println()
-			heading.Printf("Summary: Plugins Used In 32-bit Projects")
-			fmt.Println()
-			fmt.Println()
-
-			plugins := make([]Plugin, 0, len(pluginCounts32))
-			for plugin := range pluginCounts32 {
-				plugins = append(plugins, plugin)
-			}
-
-			slices.SortFunc(plugins, func(a, b Plugin) bool {
-				return strings.ToLower(a.Name) < strings.ToLower(b.Name)
-			})
-
-			for _, plugin := range plugins {
-				count := pluginCounts32[plugin]
-				fmt.Printf("    > %s : %s (%d)\n", plugin.Guid, plugin.Name, count)
-			}
-		}
-
-		if len(pluginCounts64) != 0 {
-			fmt.Println()
-			heading.Printf("Summary: Plugins Used In 64-bit Projects")
-			fmt.Println()
-			fmt.Println()
-
-			plugins := make([]Plugin, 0, len(pluginCounts64))
-			for plugin := range pluginCounts64 {
-				plugins = append(plugins, plugin)
-			}
-
-			slices.SortFunc(plugins, func(a, b Plugin) bool {
-				return strings.ToLower(a.Name) < strings.ToLower(b.Name)
-			})
-
-			for _, plugin := range plugins {
-				count := pluginCounts64[plugin]
-				fmt.Printf("    > %s : %s (%d)\n", plugin.Guid, plugin.Name, count)
-			}
-		}
-
-		if len(pluginCounts) != 0 {
-			fmt.Println()
-			heading.Printf("Summary: Plugins Used In All Projects")
-			fmt.Println()
-			fmt.Println()
-
-			plugins := make([]Plugin, 0, len(pluginCounts))
-			for plugin := range pluginCounts {
-				plugins = append(plugins, plugin)
-			}
-
-			slices.SortFunc(plugins, func(a, b Plugin) bool {
-				return strings.ToLower(a.Name) < strings.ToLower(b.Name)
-			})
-
-			for _, plugin := range plugins {
-				count := pluginCounts[plugin]
-				fmt.Printf("    > %s : %s (%d)\n", plugin.Guid, plugin.Name, count)
-			}
-		}
+		printSummary(pluginCounts32, "32-bit", heading)
+		printSummary(pluginCounts64, "64-bit", heading)
+		printSummary(pluginCounts, "All", heading)
 
 		return nil
 	},
@@ -193,4 +137,28 @@ func Execute() error {
 func init() {
 	rootCmd.MarkFlagRequired("project-path")
 	rootCmd.Flags().StringVarP(&configPath, "config", "c", "", "config file `path`")
+}
+
+func printSummary(pluginCounts map[Plugin]int, description string, heading *color.Color) {
+	if len(pluginCounts) == 0 {
+		return
+	}
+	fmt.Println()
+	heading.Printf("Summary: Plugins Used In %s Projects", description)
+	fmt.Println()
+	fmt.Println()
+
+	plugins := make([]Plugin, 0, len(pluginCounts))
+	for plugin := range pluginCounts {
+		plugins = append(plugins, plugin)
+	}
+
+	slices.SortFunc(plugins, func(a, b Plugin) bool {
+		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
+	})
+
+	for _, plugin := range plugins {
+		count := pluginCounts[plugin]
+		fmt.Printf("    > %s : %s (%d)\n", plugin.Guid, plugin.Name, count)
+	}
 }
