@@ -20,8 +20,7 @@ var rootCmd = &cobra.Command{
 	Version: "1.0.0",
 	Short:   "Displays all plugins used in your Cubase projects along with the Cubase version the project was created with.",
 	Args:    cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		failure := color.New(color.FgRed)
+	RunE: func(cmd *cobra.Command, args []string) error {
 		heading := color.New(color.BgRed, color.FgHiWhite)
 		subHeading := color.New(color.FgHiBlue)
 
@@ -34,12 +33,7 @@ var rootCmd = &cobra.Command{
 		if configPath != "" {
 			_, err := toml.DecodeFile(configPath, &config)
 			if err != nil {
-				failure.Fprintf(
-					os.Stderr,
-					"Error: Unable to open the config file at %s\n",
-					configPath,
-				)
-				os.Exit(1)
+				return fmt.Errorf("unable to open the config file at %s", configPath)
 			}
 		}
 
@@ -121,12 +115,7 @@ var rootCmd = &cobra.Command{
 			)
 
 			if err != nil {
-				failure.Fprintf(
-					os.Stderr,
-					"Error: Unable to walk the directory %s\n",
-					projectPath,
-				)
-				os.Exit(1)
+				return fmt.Errorf("unable to walk the directory %s", projectPath)
 			}
 		}
 
@@ -192,6 +181,8 @@ var rootCmd = &cobra.Command{
 				fmt.Printf("    > %s : %s (%d)\n", plugin.Guid, plugin.Name, count)
 			}
 		}
+
+		return nil
 	},
 }
 
