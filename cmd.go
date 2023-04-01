@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -13,13 +14,19 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+var (
+	ErrOpenConfigFile = errors.New("unable to open the config file requested")
+	ErrWalkDir        = errors.New("unable to walk one or more directories requested")
+)
+
 var configPath string
 
 var rootCmd = &cobra.Command{
 	Use:     "cubase-project-plugins [flags] [project path]...",
 	Version: "1.0.0",
-	Short:   "Displays all plugins used in your Cubase projects along with the Cubase version the project was created with.",
-	Args:    cobra.MinimumNArgs(1),
+	Short: "Displays all plugins used in your Cubase projects along with the Cubase version " +
+		"the project was created with.",
+	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		heading := color.New(color.BgRed, color.FgHiWhite)
 		subHeading := color.New(color.FgHiBlue)
@@ -33,7 +40,7 @@ var rootCmd = &cobra.Command{
 		if configPath != "" {
 			_, err := toml.DecodeFile(configPath, &config)
 			if err != nil {
-				return fmt.Errorf("unable to open the config file at %s", configPath)
+				return ErrOpenConfigFile
 			}
 		}
 
@@ -81,7 +88,7 @@ var rootCmd = &cobra.Command{
 					var displayPlugins []Plugin
 
 					for plugin := range project.Plugins.Iterator().C {
-						if slices.Contains(config.Plugins.GuidIgnores, plugin.Guid) {
+						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) {
 							continue
 						}
 
@@ -110,15 +117,14 @@ var rootCmd = &cobra.Command{
 
 						pluginCounts[plugin]++
 
-						fmt.Printf("    > %s : %s\n", plugin.Guid, plugin.Name)
+						fmt.Printf("    > %s : %s\n", plugin.GUID, plugin.Name)
 					}
 
 					return nil
 				},
 			)
-
 			if err != nil {
-				return fmt.Errorf("unable to walk the directory %s", projectPath)
+				return ErrWalkDir
 			}
 		}
 
@@ -135,7 +141,7 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.MarkFlagRequired("project-path")
+	_ = rootCmd.MarkFlagRequired("project-path")
 	rootCmd.Flags().StringVarP(&configPath, "config", "c", "", "config file `path`")
 }
 
@@ -159,6 +165,6 @@ func printSummary(pluginCounts map[Plugin]int, description string, heading *colo
 
 	for _, plugin := range plugins {
 		count := pluginCounts[plugin]
-		fmt.Printf("    > %s : %s (%d)\n", plugin.Guid, plugin.Name, count)
+		fmt.Printf("    > %s : %s (%d)\n", plugin.GUID, plugin.Name, count)
 	}
 }

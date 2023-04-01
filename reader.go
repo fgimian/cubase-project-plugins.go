@@ -8,8 +8,14 @@ import (
 )
 
 const (
-	PluginUidSearchTerm  = "Plugin UID\000"
+	PluginUIDSearchTerm  = "Plugin UID\000"
 	AppVersionSearchTerm = "PAppVersion\000"
+)
+
+var (
+	ErrLengthBeyondEOF = errors.New("the length byte requested goes beyond the end of the project")
+	ErrTokenBeyondEOF  = errors.New("the token size requested goes beyond the end of the project")
+	ErrTokenNulMissing = errors.New("no null terminator was found in the token bytes")
 )
 
 // Determines the used plugins in a Cubase project along with related version of Cubase which the
@@ -110,12 +116,12 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 	readIndex := index
 
-	uidTerm := r.getBytes(readIndex, len(PluginUidSearchTerm))
-	if string(uidTerm) != PluginUidSearchTerm {
+	uidTerm := r.getBytes(readIndex, len(PluginUIDSearchTerm))
+	if string(uidTerm) != PluginUIDSearchTerm {
 		return nil, 0, false
 	}
 
-	readIndex += len(PluginUidSearchTerm) + 22
+	readIndex += len(PluginUIDSearchTerm) + 22
 	guid, length, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
@@ -148,7 +154,7 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 		}
 	}
 
-	plugin := Plugin{Guid: guid, Name: name}
+	plugin := Plugin{GUID: guid, Name: name}
 	return &plugin, readIndex, true
 }
 
@@ -164,18 +170,18 @@ func (r *Reader) getBytes(index int, length int) []byte {
 func (r *Reader) getToken(index int) (string, int, error) {
 	lenBytes := r.getBytes(index, 1)
 	if lenBytes == nil {
-		return "", 0, errors.New("the length byte requested goes beyond the end of the project")
+		return "", 0, ErrLengthBeyondEOF
 	}
 	length := int(lenBytes[0])
 
 	tokenBytes := r.getBytes(index+1, length)
 	if tokenBytes == nil {
-		return "", 0, errors.New("the token size requested goes beyond the end of the project")
+		return "", 0, ErrTokenBeyondEOF
 	}
 
 	nullIndex := bytes.Index(tokenBytes, []byte{0})
 	if nullIndex == -1 {
-		return "", 0, errors.New("no null terminator was found in the token bytes")
+		return "", 0, ErrTokenNulMissing
 	}
 
 	token := string(tokenBytes[:nullIndex])

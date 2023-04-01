@@ -1,0 +1,11 @@
+run:
+  timeout: "5m"
+
+linters:
+  enable:
+    - godot
+    - goerr113
+    - gofumpt
+    - lll
+    - revive
+    - unconvert

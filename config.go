@@ -8,7 +8,7 @@ type Projects struct {
 
 // Plugin specific configuration for the tool.
 type Plugins struct {
-	GuidIgnores []string `toml:"guid_ignores"`
+	GUIDIgnores []string `toml:"guid_ignores"`
 	NameIgnores []string `toml:"name_ignores"`
 }
 

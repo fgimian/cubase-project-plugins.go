@@ -4,7 +4,7 @@ import (
 	set "github.com/deckarep/golang-set/v2"
 )
 
-// Contains information about the Cubase version used to create the project
+// Contains information about the Cubase version used to create the project.
 type Metadata struct {
 	Application  string
 	Version      string
@@ -14,7 +14,7 @@ type Metadata struct {
 
 // Represents a plugin within a Cubase project.
 type Plugin struct {
-	Guid string
+	GUID string
 	Name string
 }
 
