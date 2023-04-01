@@ -21,7 +21,7 @@ var rootCmd = &cobra.Command{
 	Short:   "Displays all plugins used in your Cubase projects along with the Cubase version the project was created with.",
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		red := color.New(color.FgRed)
+		failure := color.New(color.FgRed)
 		heading := color.New(color.BgRed, color.FgHiWhite)
 		subHeading := color.New(color.FgHiBlue)
 
@@ -34,7 +34,7 @@ var rootCmd = &cobra.Command{
 		if configPath != "" {
 			_, err := toml.DecodeFile(configPath, &config)
 			if err != nil {
-				red.Fprintf(
+				failure.Fprintf(
 					os.Stderr,
 					"Error: Unable to open the config file at %s\n",
 					configPath,
@@ -48,10 +48,10 @@ var rootCmd = &cobra.Command{
 		pluginCounts64 := make(map[Plugin]int)
 
 		for _, projectPath := range args {
-			filepath.Walk(
+			err := filepath.Walk(
 				projectPath,
 				func(path string, info fs.FileInfo, err error) error {
-					if filepath.Ext(path) != ".cpr" {
+					if err != nil || filepath.Ext(path) != ".cpr" {
 						return nil
 					}
 
@@ -104,24 +104,12 @@ var rootCmd = &cobra.Command{
 					if len(displayPlugins) > 0 {
 						fmt.Println()
 						for _, plugin := range displayPlugins {
-							if _, ok := pluginCounts[plugin]; ok {
-								pluginCounts[plugin]++
-							} else {
-								pluginCounts[plugin] = 1
-							}
+							pluginCounts[plugin]++
 
 							if is64Bit {
-								if _, ok := pluginCounts64[plugin]; ok {
-									pluginCounts64[plugin]++
-								} else {
-									pluginCounts64[plugin] = 1
-								}
+								pluginCounts64[plugin]++
 							} else {
-								if _, ok := pluginCounts32[plugin]; ok {
-									pluginCounts32[plugin]++
-								} else {
-									pluginCounts32[plugin] = 1
-								}
+								pluginCounts32[plugin]++
 							}
 
 							fmt.Printf("    > %s : %s\n", plugin.Guid, plugin.Name)
@@ -131,6 +119,15 @@ var rootCmd = &cobra.Command{
 					return nil
 				},
 			)
+
+			if err != nil {
+				failure.Fprintf(
+					os.Stderr,
+					"Error: Unable to walk the directory %s\n",
+					projectPath,
+				)
+				os.Exit(1)
+			}
 		}
 
 		if len(pluginCounts32) != 0 {
