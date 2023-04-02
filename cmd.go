@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	ErrOpenConfigFile = errors.New("unable to open the config file requested")
-	ErrWalkDir        = errors.New("unable to walk one or more directories requested")
+	ErrOpenConfigFile  = errors.New("unable to open the config file requested")
+	ErrParseConfigFile = errors.New("unable to parse the config file requested")
+	ErrWalkDir         = errors.New("unable to walk one or more directories requested")
 )
 
 // See https://github.com/golang/go/issues/50603 for a better way of determining the version
@@ -43,9 +44,15 @@ var rootCmd = &cobra.Command{
 			},
 		}
 		if configPath != "" {
-			_, err := toml.DecodeFile(configPath, &config)
+			f, err := os.Open(configPath)
 			if err != nil {
 				return ErrOpenConfigFile
+			}
+			defer f.Close()
+
+			_, err = toml.NewDecoder(f).Decode(&config)
+			if err != nil {
+				return ErrParseConfigFile
 			}
 		}
 
