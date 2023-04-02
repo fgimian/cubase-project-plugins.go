@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
@@ -66,6 +67,16 @@ var rootCmd = &cobra.Command{
 				func(path string, info fs.FileInfo, err error) error {
 					if err != nil || filepath.Ext(path) != ".cpr" {
 						return nil
+					}
+
+					for _, pathIgnorePattern := range config.PathIgnorePatterns {
+						match, err := doublestar.Match(
+							filepath.ToSlash(pathIgnorePattern),
+							filepath.ToSlash(path),
+						)
+						if err == nil && match {
+							return nil
+						}
 					}
 
 					projectBytes, err := os.ReadFile(path)

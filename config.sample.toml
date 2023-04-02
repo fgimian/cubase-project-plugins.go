@@ -1,13 +1,13 @@
 # The path patterns to ignore.
 path_ignore_patterns = [
     # Older project versions.
-    "*/Older Versions*/*",
+    "**/Older Versions*/**/*.cpr",
 
     # Collaboration with Trance Arts where he used many plugins I didn't have.
-    "*/Touching up Saw & Background Pads/*",
+    "**/Touching up Saw & Background Pads/*.cpr",
 
     # A project with corrupted EQuilibrium instances.
-    "*/Busted EQuilibrium/*"
+    "**/Busted EQuilibrium/*.cpr"
 ]
 
 [projects]

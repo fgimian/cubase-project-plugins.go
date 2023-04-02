@@ -8,6 +8,8 @@ require github.com/deckarep/golang-set/v2 v2.3.0
 
 require golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 
+require github.com/bmatcuk/doublestar/v4 v4.6.0
+
 require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/fatih/color v1.15.0
