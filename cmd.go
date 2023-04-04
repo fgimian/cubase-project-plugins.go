@@ -35,6 +35,8 @@ var rootCmd = &cobra.Command{
 		"the project was created with.",
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		cmd.SilenceUsage = true
+
 		heading := color.New(color.BgRed, color.FgHiWhite)
 		subHeading := color.New(color.FgHiBlue)
 
