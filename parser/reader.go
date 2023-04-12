@@ -1,10 +1,11 @@
-package main
+package parser
 
 import (
 	"bytes"
 	"errors"
 
 	set "github.com/deckarep/golang-set/v2"
+	"github.com/fgimian/cubase-project-plugins.go/models"
 )
 
 const (
@@ -28,15 +29,15 @@ func NewReader(projectBytes []byte) Reader {
 	return Reader{projectBytes: projectBytes}
 }
 
-func (r *Reader) GetProjectDetails() Project {
-	metadata := Metadata{
+func (r *Reader) GetProjectDetails() models.Project {
+	metadata := models.Metadata{
 		Application:  "Cubase",
 		Version:      "Unknown",
 		ReleaseDate:  "Unknown",
 		Architecture: "Unknown",
 	}
 
-	plugins := set.NewSet[Plugin]()
+	plugins := set.NewSet[models.Plugin]()
 
 	index := 0
 	for index < len(r.projectBytes) {
@@ -62,13 +63,13 @@ func (r *Reader) GetProjectDetails() Project {
 		index++
 	}
 
-	return Project{
+	return models.Project{
 		Metadata: metadata,
 		Plugins:  plugins,
 	}
 }
 
-func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
+func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
 	readIndex := index
 
 	versionTerm := r.getBytes(readIndex, len(AppVersionSearchTerm))
@@ -104,7 +105,7 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 		readIndex += length
 	}
 
-	metadata := Metadata{
+	metadata := models.Metadata{
 		Application:  application,
 		Version:      version,
 		ReleaseDate:  releaseDate,
@@ -113,7 +114,7 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 	return &metadata, readIndex, true
 }
 
-func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
+func (r *Reader) searchPlugin(index int) (*models.Plugin, int, bool) {
 	readIndex := index
 
 	uidTerm := r.getBytes(readIndex, len(PluginUIDSearchTerm))
@@ -154,7 +155,7 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 		}
 	}
 
-	plugin := Plugin{GUID: guid, Name: name}
+	plugin := models.Plugin{GUID: guid, Name: name}
 	return &plugin, readIndex, true
 }
 

@@ -3,6 +3,8 @@ version: "3"
 vars:
   VERSION:
     sh: git describe --always --tags --dirty
+  MODULE:
+    sh: go list -m
 
 tasks:
   format:
@@ -14,7 +16,7 @@ tasks:
   build:
     desc: Builds the application binary.
     cmds:
-      - go build -buildvcs=true -ldflags="-s -w -X main.version={{.VERSION}}"
+      - go build -buildvcs=true -ldflags="-s -w -X {{.MODULE}}/cmd.version={{.VERSION}}"
 
   lint:
     desc: Runs linters on the codebase.

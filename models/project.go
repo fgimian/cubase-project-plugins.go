@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	set "github.com/deckarep/golang-set/v2"

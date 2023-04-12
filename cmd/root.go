@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"errors"
@@ -11,6 +11,8 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
+	"github.com/fgimian/cubase-project-plugins.go/models"
+	"github.com/fgimian/cubase-project-plugins.go/parser"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 )
@@ -40,8 +42,8 @@ var rootCmd = &cobra.Command{
 		heading := color.New(color.BgRed, color.FgHiWhite)
 		subHeading := color.New(color.FgHiBlue)
 
-		config := Config{
-			Projects: Projects{
+		config := models.Config{
+			Projects: models.Projects{
 				Report32Bit: true,
 				Report64Bit: true,
 			},
@@ -59,9 +61,9 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		pluginCounts := make(map[Plugin]int)
-		pluginCounts32 := make(map[Plugin]int)
-		pluginCounts64 := make(map[Plugin]int)
+		pluginCounts := make(map[models.Plugin]int)
+		pluginCounts32 := make(map[models.Plugin]int)
+		pluginCounts64 := make(map[models.Plugin]int)
 
 		for _, projectPath := range args {
 			err := filepath.Walk(
@@ -86,7 +88,7 @@ var rootCmd = &cobra.Command{
 						return nil
 					}
 
-					reader := NewReader(projectBytes)
+					reader := parser.NewReader(projectBytes)
 					project := reader.GetProjectDetails()
 
 					is64Bit := project.Metadata.Architecture == "WIN64" ||
@@ -110,7 +112,7 @@ var rootCmd = &cobra.Command{
 					)
 					fmt.Println()
 
-					var displayPlugins []Plugin
+					var displayPlugins []models.Plugin
 
 					for plugin := range project.Plugins.Iterator().C {
 						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) {
@@ -128,7 +130,7 @@ var rootCmd = &cobra.Command{
 						return nil
 					}
 
-					slices.SortFunc(displayPlugins, func(a, b Plugin) bool {
+					slices.SortFunc(displayPlugins, func(a, b models.Plugin) bool {
 						return strings.ToLower(a.Name) < strings.ToLower(b.Name)
 					})
 
@@ -170,7 +172,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&configPath, "config", "c", "", "config file `path`")
 }
 
-func printSummary(pluginCounts map[Plugin]int, description string, heading *color.Color) {
+func printSummary(pluginCounts map[models.Plugin]int, description string, heading *color.Color) {
 	if len(pluginCounts) == 0 {
 		return
 	}
@@ -179,12 +181,12 @@ func printSummary(pluginCounts map[Plugin]int, description string, heading *colo
 	fmt.Println()
 	fmt.Println()
 
-	plugins := make([]Plugin, 0, len(pluginCounts))
+	plugins := make([]models.Plugin, 0, len(pluginCounts))
 	for plugin := range pluginCounts {
 		plugins = append(plugins, plugin)
 	}
 
-	slices.SortFunc(plugins, func(a, b Plugin) bool {
+	slices.SortFunc(plugins, func(a, b models.Plugin) bool {
 		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
 	})
 
