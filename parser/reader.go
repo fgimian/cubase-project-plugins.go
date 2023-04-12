@@ -25,10 +25,13 @@ type Reader struct {
 	projectBytes []byte
 }
 
+// NewReader returns a new reader that parses the given project bytes.
 func NewReader(projectBytes []byte) Reader {
 	return Reader{projectBytes: projectBytes}
 }
 
+// GetProjectDetails obtains all project details including Cubase version and plugins used and
+// returns an instance of Project containing project details.
 func (r *Reader) GetProjectDetails() models.Project {
 	metadata := models.Metadata{
 		Application:  "Cubase",
@@ -41,11 +44,14 @@ func (r *Reader) GetProjectDetails() models.Project {
 
 	index := 0
 	for index < len(r.projectBytes) {
+		// Check if the current byte matches the letter P which is the first letter of all our
+		// search terms.
 		if r.projectBytes[index] != 'P' {
 			index++
 			continue
 		}
 
+		// Check whether the next set of bytes are related to the Cubase version.
 		foundMetadata, updatedIndex, found := r.searchMetadata(index)
 		if found {
 			metadata = *foundMetadata
@@ -53,6 +59,7 @@ func (r *Reader) GetProjectDetails() models.Project {
 			continue
 		}
 
+		// Check whether the next set of bytes relate to a plugin.
 		foundPlugin, updatedIndex, found := r.searchPlugin(index)
 		if found {
 			plugins.Add(*foundPlugin)
