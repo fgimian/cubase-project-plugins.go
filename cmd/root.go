@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -25,16 +26,10 @@ var (
 	ErrWalkDir         = errors.New("unable to walk one or more directories requested")
 )
 
-// See https://github.com/golang/go/issues/50603 for a better way of determining the version
-// in future.
-var (
-	version    string
-	configPath string
-)
+var configPath string
 
 var rootCmd = &cobra.Command{
-	Use:     "cubase-project-plugins [flags] [project path]...",
-	Version: version,
+	Use: "cubase-project-plugins [flags] [project path]...",
 	Short: "Displays all plugins used in your Cubase projects along with the Cubase version " +
 		"the project was created with.",
 	Args: cobra.MinimumNArgs(1),
@@ -166,6 +161,10 @@ func Execute() error {
 }
 
 func init() {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		rootCmd.Version = info.Main.Version
+	}
+
 	_ = rootCmd.MarkFlagRequired("project-path")
 	rootCmd.Flags().StringVarP(&configPath, "config", "c", "", "config file `path`")
 }
