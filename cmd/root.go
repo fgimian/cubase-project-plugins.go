@@ -115,11 +115,8 @@ var rootCmd = &cobra.Command{
 					var displayPlugins []models.Plugin
 
 					for plugin := range project.Plugins.Iterator().C {
-						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) {
-							continue
-						}
-
-						if slices.Contains(config.Plugins.NameIgnores, plugin.Name) {
+						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) ||
+							slices.Contains(config.Plugins.NameIgnores, plugin.Name) {
 							continue
 						}
 
@@ -136,13 +133,12 @@ var rootCmd = &cobra.Command{
 
 					fmt.Println()
 					for _, plugin := range displayPlugins {
+						pluginCounts[plugin]++
 						if is64Bit {
 							pluginCounts64[plugin]++
 						} else {
 							pluginCounts32[plugin]++
 						}
-
-						pluginCounts[plugin]++
 
 						fmt.Printf("    > %s : %s\n", plugin.GUID, plugin.Name)
 					}

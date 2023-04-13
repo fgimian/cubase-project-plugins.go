@@ -20,6 +20,6 @@ type Plugin struct {
 
 // Captures the Cubase version and all plugins used for a Cubase project.
 type Project struct {
-	Metadata Metadata        // project metadata
+	Metadata Metadata        // metadata describing the Cubase version used to create the project
 	Plugins  set.Set[Plugin] // plugins used in the project
 }

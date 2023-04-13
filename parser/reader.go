@@ -39,7 +39,6 @@ func (r *Reader) GetProjectDetails() models.Project {
 		ReleaseDate:  "Unknown",
 		Architecture: "Unknown",
 	}
-
 	plugins := set.NewSet[models.Plugin]()
 
 	index := 0
@@ -48,39 +47,27 @@ func (r *Reader) GetProjectDetails() models.Project {
 		// search terms.
 		if r.projectBytes[index] != 'P' {
 			index++
-			continue
-		}
-
-		// Check whether the next set of bytes are related to the Cubase version.
-		foundMetadata, updatedIndex, found := r.searchMetadata(index)
-		if found {
+		} else if foundMetadata, updatedIndex, found := r.searchMetadata(index); found {
+			// Check whether the next set of bytes are related to the Cubase version.
 			metadata = *foundMetadata
 			index = updatedIndex
-			continue
-		}
-
-		// Check whether the next set of bytes relate to a plugin.
-		foundPlugin, updatedIndex, found := r.searchPlugin(index)
-		if found {
+		} else if foundPlugin, updatedIndex, found := r.searchPlugin(index); found {
+			// Check whether the next set of bytes relate to a plugin.
 			plugins.Add(*foundPlugin)
 			index = updatedIndex
-			continue
+		} else {
+			index++
 		}
-
-		index++
 	}
 
-	return models.Project{
-		Metadata: metadata,
-		Plugins:  plugins,
-	}
+	return models.Project{Metadata: metadata, Plugins: plugins}
 }
 
 func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
 	readIndex := index
 
 	versionTerm := r.getBytes(readIndex, len(AppVersionSearchTerm))
-	if string(versionTerm) != AppVersionSearchTerm {
+	if versionTerm == nil || string(versionTerm) != AppVersionSearchTerm {
 		return nil, 0, false
 	}
 
@@ -90,12 +77,14 @@ func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
 	if err != nil {
 		return nil, 0, false
 	}
+
 	readIndex += length + 3
 
 	version, length, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
+
 	readIndex += length + 3
 
 	releaseDate, length, err := r.getToken(readIndex)
@@ -125,27 +114,31 @@ func (r *Reader) searchPlugin(index int) (*models.Plugin, int, bool) {
 	readIndex := index
 
 	uidTerm := r.getBytes(readIndex, len(PluginUIDSearchTerm))
-	if string(uidTerm) != PluginUIDSearchTerm {
+	if uidTerm == nil || string(uidTerm) != PluginUIDSearchTerm {
 		return nil, 0, false
 	}
 
 	readIndex += len(PluginUIDSearchTerm) + 22
+
 	guid, length, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
+
 	readIndex += length + 3
 
 	key, length, err := r.getToken(readIndex)
 	if err != nil || key != "Plugin Name" {
 		return nil, 0, false
 	}
+
 	readIndex += length + 5
 
 	name, length, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
+
 	readIndex += length + 3
 
 	key, length, err = r.getToken(readIndex)
