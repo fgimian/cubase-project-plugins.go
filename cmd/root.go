@@ -11,11 +11,12 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
-	"github.com/fgimian/cubase-project-plugins.go/models"
-	"github.com/fgimian/cubase-project-plugins.go/parser"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
+
+	"github.com/fgimian/cubase-project-plugins.go/models"
+	"github.com/fgimian/cubase-project-plugins.go/parser"
 )
 
 var (
