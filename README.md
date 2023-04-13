@@ -52,7 +52,7 @@ You may see the sample config **config.sample.toml** for inspiration.
 2. Install the tool
 
     ```
-    go install github.com:fgimian/cubase-project-plugins@latest
+    go install github.com/fgimian/cubase-project-plugins@latest
     ```
 
 3. You may now run the tool using the `cubase-project-plugins` executable
