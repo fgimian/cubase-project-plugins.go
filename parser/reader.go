@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/fgimian/cubase-project-plugins.go/models"
+	"github.com/fgimian/cubase-project-plugins/models"
 )
 
 const (

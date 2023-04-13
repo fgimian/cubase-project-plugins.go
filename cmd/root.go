@@ -15,8 +15,8 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 
-	"github.com/fgimian/cubase-project-plugins.go/models"
-	"github.com/fgimian/cubase-project-plugins.go/parser"
+	"github.com/fgimian/cubase-project-plugins/models"
+	"github.com/fgimian/cubase-project-plugins/parser"
 )
 
 var (

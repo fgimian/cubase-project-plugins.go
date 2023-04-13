@@ -52,7 +52,7 @@ You may see the sample config **config.sample.toml** for inspiration.
 2. Install the tool
 
     ```
-    go install github.com:fgimian/cubase-project-plugins.go@latest
+    go install github.com:fgimian/cubase-project-plugins@latest
     ```
 
 3. You may now run the tool using the `cubase-project-plugins` executable
@@ -62,5 +62,5 @@ You may optionally redirect the output to a file using the `>` operator.
 ## License
 
 Cubase Project Plugins is released under the **MIT** license. Please see the
-[LICENSE](https://github.com/fgimian/cubase-project-plugins.go/blob/main/LICENSE) file for more
+[LICENSE](https://github.com/fgimian/cubase-project-plugins/blob/main/LICENSE) file for more
 details.

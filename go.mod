@@ -1,4 +1,4 @@
-module github.com/fgimian/cubase-project-plugins.go
+module github.com/fgimian/cubase-project-plugins
 
 go 1.20
 

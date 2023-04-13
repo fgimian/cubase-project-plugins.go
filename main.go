@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/fgimian/cubase-project-plugins.go/cmd"
+	"github.com/fgimian/cubase-project-plugins/cmd"
 )
 
 func main() {
