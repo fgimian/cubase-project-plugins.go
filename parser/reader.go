@@ -73,32 +73,32 @@ func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
 
 	readIndex += len(AppVersionSearchTerm) + 9
 
-	application, length, err := r.getToken(readIndex)
+	application, readBytes, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
 
-	readIndex += length + 3
+	readIndex += readBytes + 3
 
-	version, length, err := r.getToken(readIndex)
+	version, readBytes, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
 
-	readIndex += length + 3
+	readIndex += readBytes + 3
 
-	releaseDate, length, err := r.getToken(readIndex)
+	releaseDate, readBytes, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
-	readIndex += length + 7
+	readIndex += readBytes + 7
 
 	// Older 32-bit versions of Cubase didn't list the architecture in the project file.
-	architecture, length, err := r.getToken(readIndex)
+	architecture, readBytes, err := r.getToken(readIndex)
 	if err != nil {
 		architecture = "Not Specified"
 	} else {
-		readIndex += length
+		readIndex += readBytes
 	}
 
 	metadata := models.Metadata{
@@ -120,37 +120,37 @@ func (r *Reader) searchPlugin(index int) (*models.Plugin, int, bool) {
 
 	readIndex += len(PluginUIDSearchTerm) + 22
 
-	guid, length, err := r.getToken(readIndex)
+	guid, readBytes, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
 
-	readIndex += length + 3
+	readIndex += readBytes + 3
 
-	key, length, err := r.getToken(readIndex)
+	key, readBytes, err := r.getToken(readIndex)
 	if err != nil || key != "Plugin Name" {
 		return nil, 0, false
 	}
 
-	readIndex += length + 5
+	readIndex += readBytes + 5
 
-	name, length, err := r.getToken(readIndex)
+	name, readBytes, err := r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
 
-	readIndex += length + 3
+	readIndex += readBytes + 3
 
-	key, length, err = r.getToken(readIndex)
+	key, readBytes, err = r.getToken(readIndex)
 	if err != nil {
 		return nil, 0, false
 	}
 	if key == "Original Plugin Name" {
-		readIndex += length + 5
+		readIndex += readBytes + 5
 
-		originalName, length, err := r.getToken(readIndex)
+		originalName, readBytes, err := r.getToken(readIndex)
 		if err == nil {
-			readIndex += length
+			readIndex += readBytes
 			name = originalName
 		}
 	}
