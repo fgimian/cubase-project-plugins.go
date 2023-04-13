@@ -1,8 +1,6 @@
 package models
 
-import (
-	set "github.com/deckarep/golang-set/v2"
-)
+type Nothing struct{}
 
 // Contains information about the Cubase version used to create the project.
 type Metadata struct {
@@ -20,6 +18,6 @@ type Plugin struct {
 
 // Captures the Cubase version and all plugins used for a Cubase project.
 type Project struct {
-	Metadata Metadata        // metadata describing the Cubase version used to create the project
-	Plugins  set.Set[Plugin] // plugins used in the project
+	Metadata Metadata           // metadata describing the Cubase version used to create the project
+	Plugins  map[Plugin]Nothing // plugins used in the project
 }

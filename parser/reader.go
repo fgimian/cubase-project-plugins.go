@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 
-	set "github.com/deckarep/golang-set/v2"
 	"github.com/fgimian/cubase-project-plugins.go/models"
 )
 
@@ -39,7 +38,7 @@ func (r *Reader) GetProjectDetails() models.Project {
 		ReleaseDate:  "Unknown",
 		Architecture: "Unknown",
 	}
-	plugins := set.NewSet[models.Plugin]()
+	plugins := make(map[models.Plugin]models.Nothing)
 
 	index := 0
 	for index < len(r.projectBytes) {
@@ -53,7 +52,7 @@ func (r *Reader) GetProjectDetails() models.Project {
 			index = updatedIndex
 		} else if foundPlugin, updatedIndex, found := r.searchPlugin(index); found {
 			// Check whether the next set of bytes relate to a plugin.
-			plugins.Add(*foundPlugin)
+			plugins[*foundPlugin] = models.Nothing{}
 			index = updatedIndex
 		} else {
 			index++

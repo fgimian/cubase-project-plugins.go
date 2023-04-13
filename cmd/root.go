@@ -14,6 +14,7 @@ import (
 	"github.com/fgimian/cubase-project-plugins.go/models"
 	"github.com/fgimian/cubase-project-plugins.go/parser"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )
 
@@ -114,7 +115,7 @@ var rootCmd = &cobra.Command{
 
 					var displayPlugins []models.Plugin
 
-					for plugin := range project.Plugins.Iterator().C {
+					for _, plugin := range maps.Keys(project.Plugins) {
 						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) ||
 							slices.Contains(config.Plugins.NameIgnores, plugin.Name) {
 							continue
