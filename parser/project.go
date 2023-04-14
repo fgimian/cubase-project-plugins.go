@@ -1,4 +1,4 @@
-package models
+package parser
 
 type Nothing struct{}
 

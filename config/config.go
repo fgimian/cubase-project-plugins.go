@@ -1,4 +1,4 @@
-package models
+package config
 
 // Project specific configuration for the tool.
 type Projects struct {

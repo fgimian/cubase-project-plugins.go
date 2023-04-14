@@ -16,7 +16,7 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 
-	"github.com/fgimian/cubase-project-plugins/models"
+	"github.com/fgimian/cubase-project-plugins/config"
 	"github.com/fgimian/cubase-project-plugins/parser"
 )
 
@@ -39,8 +39,8 @@ var rootCmd = &cobra.Command{
 		heading := color.New(color.BgRed, color.FgHiWhite)
 		subHeading := color.New(color.FgHiBlue)
 
-		config := models.Config{
-			Projects: models.Projects{
+		config := config.Config{
+			Projects: config.Projects{
 				Report32Bit: true,
 				Report64Bit: true,
 			},
@@ -58,9 +58,9 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		pluginCounts := make(map[models.Plugin]int)
-		pluginCounts32 := make(map[models.Plugin]int)
-		pluginCounts64 := make(map[models.Plugin]int)
+		pluginCounts := make(map[parser.Plugin]int)
+		pluginCounts32 := make(map[parser.Plugin]int)
+		pluginCounts64 := make(map[parser.Plugin]int)
 
 		for _, projectPath := range args {
 			err := filepath.Walk(
@@ -109,7 +109,7 @@ var rootCmd = &cobra.Command{
 					)
 					fmt.Println()
 
-					var displayPlugins []models.Plugin
+					var displayPlugins []parser.Plugin
 
 					for _, plugin := range maps.Keys(project.Plugins) {
 						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) ||
@@ -124,7 +124,7 @@ var rootCmd = &cobra.Command{
 						return nil
 					}
 
-					slices.SortFunc(displayPlugins, func(a, b models.Plugin) bool {
+					slices.SortFunc(displayPlugins, func(a, b parser.Plugin) bool {
 						return strings.ToLower(a.Name) < strings.ToLower(b.Name)
 					})
 
@@ -169,7 +169,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&configPath, "config", "c", "", "config file `path`")
 }
 
-func printSummary(pluginCounts map[models.Plugin]int, description string, heading *color.Color) {
+func printSummary(pluginCounts map[parser.Plugin]int, description string, heading *color.Color) {
 	if len(pluginCounts) == 0 {
 		return
 	}
@@ -178,12 +178,12 @@ func printSummary(pluginCounts map[models.Plugin]int, description string, headin
 	fmt.Println()
 	fmt.Println()
 
-	plugins := make([]models.Plugin, 0, len(pluginCounts))
+	plugins := make([]parser.Plugin, 0, len(pluginCounts))
 	for plugin := range pluginCounts {
 		plugins = append(plugins, plugin)
 	}
 
-	slices.SortFunc(plugins, func(a, b models.Plugin) bool {
+	slices.SortFunc(plugins, func(a, b parser.Plugin) bool {
 		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
 	})
 

@@ -3,8 +3,6 @@ package parser
 import (
 	"bytes"
 	"errors"
-
-	"github.com/fgimian/cubase-project-plugins/models"
 )
 
 const (
@@ -31,14 +29,14 @@ func NewReader(projectBytes []byte) Reader {
 
 // GetProjectDetails obtains all project details including Cubase version and plugins used and
 // returns an instance of Project containing project details.
-func (r *Reader) GetProjectDetails() models.Project {
-	metadata := models.Metadata{
+func (r *Reader) GetProjectDetails() Project {
+	metadata := Metadata{
 		Application:  "Cubase",
 		Version:      "Unknown",
 		ReleaseDate:  "Unknown",
 		Architecture: "Unknown",
 	}
-	plugins := make(map[models.Plugin]models.Nothing)
+	plugins := make(map[Plugin]Nothing)
 
 	index := 0
 	for index < len(r.projectBytes) {
@@ -52,17 +50,17 @@ func (r *Reader) GetProjectDetails() models.Project {
 			index = updatedIndex
 		} else if foundPlugin, updatedIndex, found := r.searchPlugin(index); found {
 			// Check whether the next set of bytes relate to a plugin.
-			plugins[*foundPlugin] = models.Nothing{}
+			plugins[*foundPlugin] = Nothing{}
 			index = updatedIndex
 		} else {
 			index++
 		}
 	}
 
-	return models.Project{Metadata: metadata, Plugins: plugins}
+	return Project{Metadata: metadata, Plugins: plugins}
 }
 
-func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
+func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 	readIndex := index
 
 	versionTerm := r.getBytes(readIndex, len(AppVersionSearchTerm))
@@ -100,7 +98,7 @@ func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
 		readIndex += readBytes
 	}
 
-	metadata := models.Metadata{
+	metadata := Metadata{
 		Application:  application,
 		Version:      version,
 		ReleaseDate:  releaseDate,
@@ -109,7 +107,7 @@ func (r *Reader) searchMetadata(index int) (*models.Metadata, int, bool) {
 	return &metadata, readIndex, true
 }
 
-func (r *Reader) searchPlugin(index int) (*models.Plugin, int, bool) {
+func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 	readIndex := index
 
 	uidTerm := r.getBytes(readIndex, len(PluginUIDSearchTerm))
@@ -154,7 +152,7 @@ func (r *Reader) searchPlugin(index int) (*models.Plugin, int, bool) {
 		}
 	}
 
-	plugin := models.Plugin{GUID: guid, Name: name}
+	plugin := Plugin{GUID: guid, Name: name}
 	return &plugin, readIndex, true
 }
 
