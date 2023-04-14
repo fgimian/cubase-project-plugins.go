@@ -45,6 +45,16 @@ var rootCmd = &cobra.Command{
 				Report64Bit: true,
 			},
 		}
+
+		if configPath == "" {
+			defaultConfigPath := getDefaultConfigPath()
+			if defaultConfigPath != "" {
+				if _, err := os.Stat(defaultConfigPath); err == nil {
+					configPath = defaultConfigPath
+				}
+			}
+		}
+
 		if configPath != "" {
 			f, err := os.Open(configPath)
 			if err != nil {
@@ -166,7 +176,16 @@ func init() {
 	}
 
 	_ = rootCmd.MarkFlagRequired("project-path")
-	rootCmd.Flags().StringVarP(&configPath, "config", "c", "", "config file `path`")
+	rootCmd.Flags().
+		StringVarP(&configPath, "config", "c", "", "config file `path`")
+}
+
+func getDefaultConfigPath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(home, ".config", "cubase-project-plugins.toml")
 }
 
 func printSummary(pluginCounts map[parser.Plugin]int, description string, heading *color.Color) {
