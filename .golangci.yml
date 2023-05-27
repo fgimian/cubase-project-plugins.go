@@ -1,11 +1,93 @@
+---
 run:
-  timeout: "5m"
+  deadline: 5m
 
 linters:
-  enable:
-    - godot
-    - goerr113
-    - gofumpt
-    - lll
-    - revive
-    - unconvert
+  presets:
+    # Enable all linters via the provided presets.
+    - bugs
+    - comment
+    - complexity
+    - error
+    - format
+    - import
+    - metalinter
+    - module
+    - performance
+    - sql
+    - style
+    - test
+    - unused
+
+  disable:
+    # Don't force exhaustive struct initialisation.
+    - exhaustruct
+    # Do not restrict the length of functions.
+    - funlen
+    # Allow global variables which are heavily used in Go.
+    - gochecknoglobals
+    # Allow the use of init() functions.
+    - gochecknoinits
+    # Allow TODOs in the codebase.
+    - godox
+    # Disable magic number checks which force all numbers to be constants.
+    - gomnd
+    # Do not enforce a new line before all return statements.
+    - nlreturn
+    # Allow short variable names.
+    - varnamelen
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - (*github.com/spf13/cobra.Command).MarkFlagRequired
+
+  gci:
+    # Configure the gci import order.
+    sections:
+      - standard
+      - default
+      - prefix(github.com/fgimian/cubase-project-plugins)
+
+  gocritic:
+    # Enable all gocritic checks.
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+      - opinionated
+    disabled-checks:
+      # The following checks detect specific performance-related issues and can be enabled during
+      # development to help avoid copying too much data when unnecessary.
+      - hugeParam
+      - rangeExprCopy
+      - rangeValCopy
+      # Avoid named returns completely as enforced by the nonamedreturns linter.
+      - unnamedResult
+
+  nakedret:
+    # Disable naked returns completely.
+    max-func-lines: 1
+
+  wrapcheck:
+    ignoreSigs:
+      # Default signatures to ignore as per wrapcheck defaults.
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - errors.Join(
+      - .Wrap(
+      - .Wrapf(
+      - .WithMessage(
+      - .WithMessagef(
+      - .WithStack(
+      # Avoid the need to wrap Cobra command execution errors.
+      - (*github.com/spf13/cobra.Command).Execute()
+
+issues:
+  exclude-rules:
+    # Allow fmt.Print statements in code related to our CLI.
+    - path: cmd/.*\.go
+      linters:
+        - forbidigo

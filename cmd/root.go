@@ -185,6 +185,7 @@ func getDefaultConfigPath() string {
 	if err != nil {
 		return ""
 	}
+
 	return filepath.Join(home, ".config", "cubase-project-plugins.toml")
 }
 
@@ -192,6 +193,7 @@ func printSummary(pluginCounts map[parser.Plugin]int, description string, headin
 	if len(pluginCounts) == 0 {
 		return
 	}
+
 	fmt.Println()
 	heading.Printf("Summary: Plugins Used In %s Projects", description)
 	fmt.Println()

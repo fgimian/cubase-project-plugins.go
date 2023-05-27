@@ -88,6 +88,7 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 	if err != nil {
 		return nil, 0, false
 	}
+
 	readIndex += readBytes + 7
 
 	// Older 32-bit versions of Cubase didn't list the architecture in the project file.
@@ -104,6 +105,7 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 		ReleaseDate:  releaseDate,
 		Architecture: architecture,
 	}
+
 	return &metadata, readIndex, true
 }
 
@@ -142,6 +144,7 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 	if err != nil {
 		return nil, 0, false
 	}
+
 	if key == "Original Plugin Name" {
 		readIndex += readBytes + 5
 
@@ -153,10 +156,11 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 	}
 
 	plugin := Plugin{GUID: guid, Name: name}
+
 	return &plugin, readIndex, true
 }
 
-func (r *Reader) getBytes(index int, length int) []byte {
+func (r *Reader) getBytes(index, length int) []byte {
 	end := index + length
 	if end > len(r.projectBytes) {
 		return nil
@@ -170,6 +174,7 @@ func (r *Reader) getToken(index int) (string, int, error) {
 	if lenBytes == nil {
 		return "", 0, ErrLengthBeyondEOF
 	}
+
 	length := int(lenBytes[0])
 
 	tokenBytes := r.getBytes(index+1, length)
@@ -183,5 +188,6 @@ func (r *Reader) getToken(index int) (string, int, error) {
 	}
 
 	token := string(tokenBytes[:nullIndex])
+
 	return token, length + 1, nil
 }
