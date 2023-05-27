@@ -169,7 +169,7 @@ func (r *Reader) getBytes(index, length int) []byte {
 	return r.projectBytes[index:end]
 }
 
-func (r *Reader) getToken(index int) (string, int, error) {
+func (r *Reader) getToken(index int) (token string, readBytes int, err error) {
 	lenBytes := r.getBytes(index, 1)
 	if lenBytes == nil {
 		return "", 0, ErrLengthBeyondEOF
@@ -187,7 +187,8 @@ func (r *Reader) getToken(index int) (string, int, error) {
 		return "", 0, ErrTokenNulMissing
 	}
 
-	token := string(tokenBytes[:nullIndex])
+	token = string(tokenBytes[:nullIndex])
+	readBytes = length + 1
 
-	return token, length + 1, nil
+	return token, readBytes, nil
 }

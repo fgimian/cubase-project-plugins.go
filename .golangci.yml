@@ -32,6 +32,8 @@ linters:
     - godox
     # Disable magic number checks which force all numbers to be constants.
     - gomnd
+    # Allow for named returns.
+    - nonamedreturns
     # Do not enforce a new line before all return statements.
     - nlreturn
     # Allow short variable names.
@@ -63,8 +65,6 @@ linters-settings:
       - hugeParam
       - rangeExprCopy
       - rangeValCopy
-      # Avoid named returns completely as enforced by the nonamedreturns linter.
-      - unnamedResult
 
   nakedret:
     # Disable naked returns completely.
