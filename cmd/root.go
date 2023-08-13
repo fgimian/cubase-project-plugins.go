@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"slices"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -14,7 +16,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 
 	"github.com/fgimian/cubase-project-plugins/config"
 	"github.com/fgimian/cubase-project-plugins/parser"
@@ -134,8 +135,8 @@ var rootCmd = &cobra.Command{
 						return nil
 					}
 
-					slices.SortFunc(displayPlugins, func(a, b parser.Plugin) bool {
-						return strings.ToLower(a.Name) < strings.ToLower(b.Name)
+					slices.SortFunc(displayPlugins, func(a, b parser.Plugin) int {
+						return cmp.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
 					})
 
 					fmt.Println()
@@ -204,8 +205,8 @@ func printSummary(pluginCounts map[parser.Plugin]int, description string, headin
 		plugins = append(plugins, plugin)
 	}
 
-	slices.SortFunc(plugins, func(a, b parser.Plugin) bool {
-		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
+	slices.SortFunc(plugins, func(a, b parser.Plugin) int {
+		return cmp.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
 	})
 
 	for _, plugin := range plugins {

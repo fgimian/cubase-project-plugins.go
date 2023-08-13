@@ -20,6 +20,8 @@ linters:
     - unused
 
   disable:
+    # Disable explicit specification of imported dependencies.
+    - depguard
     # Don't force exhaustive struct initialisation.
     - exhaustruct
     # Do not restrict the length of functions.
