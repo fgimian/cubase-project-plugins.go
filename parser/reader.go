@@ -184,10 +184,11 @@ func (r *Reader) getToken(index int) (token string, readBytes int, err error) {
 
 	nullIndex := bytes.Index(tokenBytes, []byte{0})
 	if nullIndex == -1 {
-		return "", 0, ErrTokenNulMissing
+		token = string(tokenBytes)
+	} else {
+		token = string(tokenBytes[:nullIndex])
 	}
 
-	token = string(tokenBytes[:nullIndex])
 	readBytes = length + 1
 
 	return token, readBytes, nil
