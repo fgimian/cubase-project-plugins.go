@@ -13,7 +13,6 @@ const (
 var (
 	ErrLengthBeyondEOF = errors.New("the length byte requested goes beyond the end of the project")
 	ErrTokenBeyondEOF  = errors.New("the token size requested goes beyond the end of the project")
-	ErrTokenNulMissing = errors.New("no null terminator was found in the token bytes")
 )
 
 // Determines the used plugins in a Cubase project along with related version of Cubase which the
