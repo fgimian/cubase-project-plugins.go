@@ -7,7 +7,6 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.6.0
 	github.com/fatih/color v1.15.0
 	github.com/spf13/cobra v1.7.0
-	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb
 )
 
 require (

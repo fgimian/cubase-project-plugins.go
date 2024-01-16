@@ -15,7 +15,6 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/maps"
 
 	"github.com/fgimian/cubase-project-plugins/config"
 	"github.com/fgimian/cubase-project-plugins/parser"
@@ -122,7 +121,7 @@ var rootCmd = &cobra.Command{
 
 					var displayPlugins []parser.Plugin
 
-					for _, plugin := range maps.Keys(project.Plugins) {
+					for plugin := range project.Plugins {
 						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) ||
 							slices.Contains(config.Plugins.NameIgnores, plugin.Name) {
 							continue
