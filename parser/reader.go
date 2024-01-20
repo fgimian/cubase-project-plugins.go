@@ -144,6 +144,9 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 		return nil, 0, false
 	}
 
+	// In Cubase 8.x and above, in cases where an instrument track has been renamed using
+	// Shift+Enter, the name retrieved above will be the track title and the name of the plugin
+	// will follow under the key "Original Plugin Name".
 	if key == "Original Plugin Name" {
 		readIndex += readBytes + 5
 
