@@ -184,11 +184,12 @@ func (r *Reader) getToken(index int) (token string, readBytes int, err error) {
 		return "", 0, ErrTokenBeyondEOF
 	}
 
-	nullIndex := bytes.Index(tokenBytes, []byte{0})
-	if nullIndex == -1 {
+	// Older versions of before Cubase 5 didn't always provide nul terminators in token strings.
+	nulIndex := bytes.Index(tokenBytes, []byte{0})
+	if nulIndex == -1 {
 		token = string(tokenBytes)
 	} else {
-		token = string(tokenBytes[:nullIndex])
+		token = string(tokenBytes[:nulIndex])
 	}
 
 	readBytes = length + 1
