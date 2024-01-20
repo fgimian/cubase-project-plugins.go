@@ -18,6 +18,6 @@ type Plugin struct {
 
 // Captures the Cubase version and all plugins used for a Cubase project.
 type Project struct {
-	Metadata Metadata           // metadata describing the Cubase version used to create the project
-	Plugins  map[Plugin]Nothing // plugins used in the project
+	Metadata Metadata // metadata describing the Cubase version used to create the project
+	Plugins  []Plugin // plugins used in the project
 }

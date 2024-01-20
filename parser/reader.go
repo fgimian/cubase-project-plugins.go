@@ -3,6 +3,8 @@ package parser
 import (
 	"bytes"
 	"errors"
+	"fmt"
+	"strings"
 )
 
 const (
@@ -11,8 +13,15 @@ const (
 )
 
 var (
-	ErrLengthBeyondEOF = errors.New("the length byte requested goes beyond the end of the project")
-	ErrTokenBeyondEOF  = errors.New("the token size requested goes beyond the end of the project")
+	ErrLengthBeyondEOF        = errors.New("the length byte requested goes beyond the end of the project")
+	ErrTokenBeyondEOF         = errors.New("the token size requested goes beyond the end of the project")
+	ErrCorruptProject         = errors.New("the project provided has no metadata and appears to be corrupt")
+	ErrNoApplication          = errors.New("unable to obtain the application name")
+	ErrNoVersion              = errors.New("unable to obtain the application version")
+	ErrNoReleaseDate          = errors.New("unable to obtain the application release date")
+	ErrNoPluginGUID           = errors.New("unable to obtain a plugin GUID")
+	ErrNoPluginName           = errors.New("unable to obtain a plugin name")
+	ErrNoTokenAfterPluginName = errors.New("unable to obtain the token after a plugin name")
 )
 
 // Determines the used plugins in a Cubase project along with related version of Cubase which the
@@ -28,14 +37,10 @@ func NewReader(projectBytes []byte) Reader {
 
 // GetProjectDetails obtains all project details including Cubase version and plugins used and
 // returns an instance of Project containing project details.
-func (r *Reader) GetProjectDetails() Project {
-	metadata := Metadata{
-		Application:  "Cubase",
-		Version:      "Unknown",
-		ReleaseDate:  "Unknown",
-		Architecture: "Unknown",
-	}
-	plugins := make(map[Plugin]Nothing)
+func (r *Reader) GetProjectDetails() (*Project, error) {
+	var metadata *Metadata
+
+	uniquePlugins := make(map[Plugin]Nothing)
 
 	index := 0
 	for index < len(r.projectBytes) {
@@ -43,49 +48,79 @@ func (r *Reader) GetProjectDetails() Project {
 		// search terms.
 		if r.projectBytes[index] != 'P' {
 			index++
-		} else if foundMetadata, updatedIndex, found := r.searchMetadata(index); found {
-			// Check whether the next set of bytes are related to the Cubase version.
-			metadata = *foundMetadata
-			index = updatedIndex
-		} else if foundPlugin, updatedIndex, found := r.searchPlugin(index); found {
-			// Check whether the next set of bytes relate to a plugin.
-			plugins[*foundPlugin] = Nothing{}
-			index = updatedIndex
-		} else {
-			index++
+			continue
 		}
+
+		// Check whether the next set of bytes are related to the Cubase version.
+		foundMetadata, updatedIndex, err := r.searchMetadata(index)
+		if err != nil {
+			return nil, fmt.Errorf("the project is corrupted: %w", err)
+		}
+
+		if foundMetadata != nil {
+			metadata = foundMetadata
+			index = updatedIndex
+
+			continue
+		}
+
+		// Check whether the next set of bytes relate to a plugin.
+		foundPlugin, updatedIndex, err := r.searchPlugin(index)
+		if err != nil {
+			return nil, fmt.Errorf("the project is corrupted: %w", err)
+		}
+
+		if foundPlugin != nil {
+			uniquePlugins[*foundPlugin] = Nothing{}
+			index = updatedIndex
+
+			continue
+		}
+
+		index++
 	}
 
-	return Project{Metadata: metadata, Plugins: plugins}
+	if metadata == nil {
+		return nil, ErrCorruptProject
+	}
+
+	plugins := make([]Plugin, 0, len(uniquePlugins))
+	for plugin := range uniquePlugins {
+		plugins = append(plugins, plugin)
+	}
+
+	return &Project{Metadata: *metadata, Plugins: plugins}, nil
 }
 
-func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
+func (r *Reader) searchMetadata(index int) (*Metadata, int, error) {
 	readIndex := index
 
 	versionTerm := r.getBytes(readIndex, len(AppVersionSearchTerm))
 	if versionTerm == nil || string(versionTerm) != AppVersionSearchTerm {
-		return nil, 0, false
+		return nil, 0, nil
 	}
 
 	readIndex += len(AppVersionSearchTerm) + 9
 
 	application, readBytes, err := r.getToken(readIndex)
 	if err != nil {
-		return nil, 0, false
+		return nil, 0, ErrNoApplication
 	}
 
 	readIndex += readBytes + 3
 
 	version, readBytes, err := r.getToken(readIndex)
 	if err != nil {
-		return nil, 0, false
+		return nil, 0, ErrNoVersion
 	}
+
+	version = strings.TrimPrefix(version, "Version ")
 
 	readIndex += readBytes + 3
 
 	releaseDate, readBytes, err := r.getToken(readIndex)
 	if err != nil {
-		return nil, 0, false
+		return nil, 0, ErrNoReleaseDate
 	}
 
 	readIndex += readBytes + 7
@@ -93,7 +128,7 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 	// Older 32-bit versions of Cubase didn't list the architecture in the project file.
 	architecture, readBytes, err := r.getToken(readIndex)
 	if err != nil {
-		architecture = "Not Specified"
+		architecture = "Unspecified"
 	} else {
 		readIndex += readBytes
 	}
@@ -105,43 +140,43 @@ func (r *Reader) searchMetadata(index int) (*Metadata, int, bool) {
 		Architecture: architecture,
 	}
 
-	return &metadata, readIndex, true
+	return &metadata, readIndex, nil
 }
 
-func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
+func (r *Reader) searchPlugin(index int) (*Plugin, int, error) {
 	readIndex := index
 
 	uidTerm := r.getBytes(readIndex, len(PluginUIDSearchTerm))
 	if uidTerm == nil || string(uidTerm) != PluginUIDSearchTerm {
-		return nil, 0, false
+		return nil, 0, nil
 	}
 
 	readIndex += len(PluginUIDSearchTerm) + 22
 
 	guid, readBytes, err := r.getToken(readIndex)
 	if err != nil {
-		return nil, 0, false
+		return nil, 0, ErrNoPluginGUID
 	}
 
 	readIndex += readBytes + 3
 
 	key, readBytes, err := r.getToken(readIndex)
 	if err != nil || key != "Plugin Name" {
-		return nil, 0, false
+		return nil, 0, ErrNoPluginName
 	}
 
 	readIndex += readBytes + 5
 
 	name, readBytes, err := r.getToken(readIndex)
 	if err != nil {
-		return nil, 0, false
+		return nil, 0, ErrNoPluginName
 	}
 
 	readIndex += readBytes + 3
 
 	key, readBytes, err = r.getToken(readIndex)
 	if err != nil {
-		return nil, 0, false
+		return nil, 0, ErrNoTokenAfterPluginName
 	}
 
 	// In Cubase 8.x and above, in cases where an instrument track has been renamed using
@@ -159,7 +194,7 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, bool) {
 
 	plugin := Plugin{GUID: guid, Name: name}
 
-	return &plugin, readIndex, true
+	return &plugin, readIndex, nil
 }
 
 func (r *Reader) getBytes(index, length int) []byte {

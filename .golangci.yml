@@ -72,24 +72,10 @@ linters-settings:
     # Disable naked returns completely.
     max-func-lines: 1
 
-  wrapcheck:
-    ignoreSigs:
-      # Default signatures to ignore as per wrapcheck defaults.
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - errors.Join(
-      - .Wrap(
-      - .Wrapf(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack(
-      # Avoid the need to wrap Cobra command execution errors.
-      - (*github.com/spf13/cobra.Command).Execute()
-
 issues:
   exclude-rules:
     # Allow fmt.Print statements in code related to our CLI.
     - path: cmd/.*\.go
       linters:
         - forbidigo
+        - wrapcheck

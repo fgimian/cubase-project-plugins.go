@@ -23,7 +23,6 @@ import (
 var (
 	ErrOpenConfigFile  = errors.New("unable to open the config file requested")
 	ErrParseConfigFile = errors.New("unable to parse the config file requested")
-	ErrWalkDir         = errors.New("unable to walk one or more directories requested")
 )
 
 var configPath string
@@ -96,7 +95,10 @@ var rootCmd = &cobra.Command{
 					}
 
 					reader := parser.NewReader(projectBytes)
-					project := reader.GetProjectDetails()
+					project, err := reader.GetProjectDetails()
+					if err != nil {
+						return err
+					}
 
 					is64Bit := project.Metadata.Architecture == "WIN64" ||
 						project.Metadata.Architecture == "MAC64 LE"
@@ -121,7 +123,7 @@ var rootCmd = &cobra.Command{
 
 					var displayPlugins []parser.Plugin
 
-					for plugin := range project.Plugins {
+					for _, plugin := range project.Plugins {
 						if slices.Contains(config.Plugins.GUIDIgnores, plugin.GUID) ||
 							slices.Contains(config.Plugins.NameIgnores, plugin.Name) {
 							continue
@@ -154,7 +156,7 @@ var rootCmd = &cobra.Command{
 				},
 			)
 			if err != nil {
-				return ErrWalkDir
+				return err
 			}
 		}
 
