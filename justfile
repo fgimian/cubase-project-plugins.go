@@ -11,10 +11,10 @@ format:
 lint:
     golangci-lint run ./...
 
-# build the application binary
-build:
-    go build
-
 # run all unit tests
 test:
-    go test -cover -coverprofile coverage.out ./...
+    go test -v -cover -coverprofile coverage.out ./...
+
+# build the application binary
+build:
+    go build -v ./...
