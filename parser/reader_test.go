@@ -7,7 +7,6 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/fgimian/cubase-project-plugins/parser"
@@ -171,7 +170,7 @@ func TestGetProjectDetails(t *testing.T) {
 				return cmp.Compare(a.GUID, b.GUID)
 			})
 
-			assert.Equal(
+			require.Equal(
 				t,
 				parser.Project{
 					Metadata: parser.Metadata{
@@ -198,7 +197,7 @@ func TestGetProjectDetailsSX3(t *testing.T) {
 	project, err := reader.GetProjectDetails()
 	require.NoError(t, err)
 
-	assert.Equal(
+	require.Equal(
 		t,
 		parser.Project{
 			Metadata: parser.Metadata{
@@ -271,7 +270,7 @@ func TestGetProjectDetailsTruncated(t *testing.T) {
 			project, err := reader.GetProjectDetails()
 
 			require.ErrorIs(t, err, tc.Error)
-			assert.Nil(t, project)
+			require.Nil(t, project)
 		})
 	}
 }
@@ -285,5 +284,5 @@ func TestGetProjectDetailsInvalidProject(t *testing.T) {
 	project, err := reader.GetProjectDetails()
 
 	require.ErrorIs(t, err, parser.ErrCorruptProject)
-	assert.Nil(t, project)
+	require.Nil(t, project)
 }
