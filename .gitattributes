@@ -1,1 +1,7 @@
-* binary
+*               text eol=lf
+*.go            text eol=lf diff=golang
+*.md            text eol=lf diff=markdown
+*.cpr           binary
+.gitattributes  export-ignore
+.gitignore      export-ignore
+.gitkeep        export-ignore
