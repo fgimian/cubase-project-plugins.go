@@ -16,122 +16,122 @@ func TestGetProjectDetails(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name                   string
-		Filename               string
-		Version                string
-		ReleaseDate            string
-		Architecture           string
-		IncludesChannelPlugins bool
-		DitherPluginName       string
+		name                   string
+		filename               string
+		version                string
+		releaseDate            string
+		architecture           string
+		includesChannelPlugins bool
+		ditherPluginName       string
 	}{
 		{
-			Name:         "Cubase 4.5 32-bit",
-			Filename:     "Example Project (Cubase 4.5 32-bit).cpr",
-			Version:      "4.5.2",
-			ReleaseDate:  "Sep  2 2008",
-			Architecture: "WIN32",
+			name:         "Cubase 4.5 32-bit",
+			filename:     "Example Project (Cubase 4.5 32-bit).cpr",
+			version:      "4.5.2",
+			releaseDate:  "Sep  2 2008",
+			architecture: "WIN32",
 		},
 		{
-			Name:         "Cubase 4.5 64-bit",
-			Filename:     "Example Project (Cubase 4.5 64-bit).cpr",
-			Version:      "4.5.2",
-			ReleaseDate:  "Sep  2 2008",
-			Architecture: "WIN64",
+			name:         "Cubase 4.5 64-bit",
+			filename:     "Example Project (Cubase 4.5 64-bit).cpr",
+			version:      "4.5.2",
+			releaseDate:  "Sep  2 2008",
+			architecture: "WIN64",
 		},
 		{
-			Name:         "Cubase 5 32-bit",
-			Filename:     "Example Project (Cubase 5 32-bit).cpr",
-			Version:      "5.5.3",
-			ReleaseDate:  "Jan 13 2011",
-			Architecture: "WIN32",
+			name:         "Cubase 5 32-bit",
+			filename:     "Example Project (Cubase 5 32-bit).cpr",
+			version:      "5.5.3",
+			releaseDate:  "Jan 13 2011",
+			architecture: "WIN32",
 		},
 		{
-			Name:         "Cubase 5 64-bit",
-			Filename:     "Example Project (Cubase 5 64-bit).cpr",
-			Version:      "5.5.3",
-			ReleaseDate:  "Jan 13 2011",
-			Architecture: "WIN64",
+			name:         "Cubase 5 64-bit",
+			filename:     "Example Project (Cubase 5 64-bit).cpr",
+			version:      "5.5.3",
+			releaseDate:  "Jan 13 2011",
+			architecture: "WIN64",
 		},
 		{
-			Name:         "Cubase 6.5 32-bit",
-			Filename:     "Example Project (Cubase 6.5 32-bit).cpr",
-			Version:      "6.5.5",
-			ReleaseDate:  "Jun 24 2013",
-			Architecture: "WIN32",
+			name:         "Cubase 6.5 32-bit",
+			filename:     "Example Project (Cubase 6.5 32-bit).cpr",
+			version:      "6.5.5",
+			releaseDate:  "Jun 24 2013",
+			architecture: "WIN32",
 		},
 		{
-			Name:         "Cubase 6.5 64-bit",
-			Filename:     "Example Project (Cubase 6.5 64-bit).cpr",
-			Version:      "6.5.5",
-			ReleaseDate:  "Jun 24 2013",
-			Architecture: "WIN64",
+			name:         "Cubase 6.5 64-bit",
+			filename:     "Example Project (Cubase 6.5 64-bit).cpr",
+			version:      "6.5.5",
+			releaseDate:  "Jun 24 2013",
+			architecture: "WIN64",
 		},
 		{
-			Name:                   "Cubase 7 32-bit",
-			Filename:               "Example Project (Cubase 7 32-bit).cpr",
-			Version:                "7.0.7",
-			ReleaseDate:            "Jan 21 2014",
-			Architecture:           "WIN32",
-			IncludesChannelPlugins: true,
+			name:                   "Cubase 7 32-bit",
+			filename:               "Example Project (Cubase 7 32-bit).cpr",
+			version:                "7.0.7",
+			releaseDate:            "Jan 21 2014",
+			architecture:           "WIN32",
+			includesChannelPlugins: true,
 		},
 		{
-			Name:                   "Cubase 7 64-bit",
-			Filename:               "Example Project (Cubase 7 64-bit).cpr",
-			Version:                "7.0.7",
-			ReleaseDate:            "Jan 21 2014",
-			Architecture:           "WIN64",
-			IncludesChannelPlugins: true,
+			name:                   "Cubase 7 64-bit",
+			filename:               "Example Project (Cubase 7 64-bit).cpr",
+			version:                "7.0.7",
+			releaseDate:            "Jan 21 2014",
+			architecture:           "WIN64",
+			includesChannelPlugins: true,
 		},
 		{
-			Name:                   "Cubase 8.5 32-bit",
-			Filename:               "Example Project (Cubase 8.5 32-bit).cpr",
-			Version:                "8.5.30",
-			ReleaseDate:            "Feb 22 2017",
-			Architecture:           "WIN32",
-			IncludesChannelPlugins: true,
+			name:                   "Cubase 8.5 32-bit",
+			filename:               "Example Project (Cubase 8.5 32-bit).cpr",
+			version:                "8.5.30",
+			releaseDate:            "Feb 22 2017",
+			architecture:           "WIN32",
+			includesChannelPlugins: true,
 		},
 		{
-			Name:                   "Cubase 8.5 64-bit",
-			Filename:               "Example Project (Cubase 8.5 64-bit).cpr",
-			Version:                "8.5.30",
-			ReleaseDate:            "Feb 22 2017",
-			Architecture:           "WIN64",
-			IncludesChannelPlugins: true,
+			name:                   "Cubase 8.5 64-bit",
+			filename:               "Example Project (Cubase 8.5 64-bit).cpr",
+			version:                "8.5.30",
+			releaseDate:            "Feb 22 2017",
+			architecture:           "WIN64",
+			includesChannelPlugins: true,
 		},
 		{
-			Name:                   "Cubase 9.5",
-			Filename:               "Example Project (Cubase 9.5).cpr",
-			Version:                "9.5.50",
-			ReleaseDate:            "Feb  2 2019",
-			Architecture:           "WIN64",
-			IncludesChannelPlugins: true,
+			name:                   "Cubase 9.5",
+			filename:               "Example Project (Cubase 9.5).cpr",
+			version:                "9.5.50",
+			releaseDate:            "Feb  2 2019",
+			architecture:           "WIN64",
+			includesChannelPlugins: true,
 		},
 		{
-			Name:                   "Cubase 11",
-			Filename:               "Example Project (Cubase 11).cpr",
-			Version:                "11.0.41",
-			ReleaseDate:            "Sep 27 2021",
-			Architecture:           "WIN64",
-			IncludesChannelPlugins: true,
+			name:                   "Cubase 11",
+			filename:               "Example Project (Cubase 11).cpr",
+			version:                "11.0.41",
+			releaseDate:            "Sep 27 2021",
+			architecture:           "WIN64",
+			includesChannelPlugins: true,
 		},
 		{
-			Name:                   "Cubase 13",
-			Filename:               "Example Project (Cubase 13).cpr",
-			Version:                "13.0.10",
-			ReleaseDate:            "Oct 10 2023",
-			Architecture:           "WIN64",
-			IncludesChannelPlugins: true,
-			DitherPluginName:       "Lin Dither",
+			name:                   "Cubase 13",
+			filename:               "Example Project (Cubase 13).cpr",
+			version:                "13.0.10",
+			releaseDate:            "Oct 10 2023",
+			architecture:           "WIN64",
+			includesChannelPlugins: true,
+			ditherPluginName:       "Lin Dither",
 		},
 	}
 
 	for _, tc := range testCases {
 		tc := tc
 
-		t.Run(tc.Name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			projectBytes, err := os.ReadFile(filepath.Join("testdata", tc.Filename))
+			projectBytes, err := os.ReadFile(filepath.Join("testdata", tc.filename))
 			require.NoError(t, err)
 
 			reader := parser.NewReader(projectBytes)
@@ -139,8 +139,8 @@ func TestGetProjectDetails(t *testing.T) {
 			require.NoError(t, err)
 
 			ditherPluginName := "UV22HR"
-			if tc.DitherPluginName != "" {
-				ditherPluginName = tc.DitherPluginName
+			if tc.ditherPluginName != "" {
+				ditherPluginName = tc.ditherPluginName
 			}
 
 			expectedPlugins := []parser.Plugin{
@@ -155,7 +155,7 @@ func TestGetProjectDetails(t *testing.T) {
 				{GUID: "946051208E29496E804F64A825C8A047", Name: "StudioEQ"},
 				{GUID: "D39D5B69D6AF42FA1234567868495645", Name: "Hive"},
 			}
-			if tc.IncludesChannelPlugins {
+			if tc.includesChannelPlugins {
 				expectedPlugins = append(expectedPlugins, []parser.Plugin{
 					{GUID: "297BA567D83144E1AE921DEF07B41156", Name: "EQ"},
 					{GUID: "D56B9C6CA4F946018EED73EB83A74B58", Name: "Input Filter"},
@@ -175,9 +175,9 @@ func TestGetProjectDetails(t *testing.T) {
 				parser.Project{
 					Metadata: parser.Metadata{
 						Application:  "Cubase",
-						Version:      tc.Version,
-						ReleaseDate:  tc.ReleaseDate,
-						Architecture: tc.Architecture,
+						Version:      tc.version,
+						ReleaseDate:  tc.releaseDate,
+						Architecture: tc.architecture,
 					},
 					Plugins: expectedPlugins,
 				},
@@ -216,60 +216,60 @@ func TestGetProjectDetailsTruncated(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name     string
-		Filename string
-		Error    error
+		name          string
+		filename      string
+		expectedError error
 	}{
 		{
-			Name:     "Application",
-			Filename: "Truncated Project (Application).cpr",
-			Error:    parser.ErrNoApplication,
+			name:          "Application",
+			filename:      "Truncated Project (Application).cpr",
+			expectedError: parser.ErrNoApplication,
 		},
 		{
-			Name:     "Version",
-			Filename: "Truncated Project (Version).cpr",
-			Error:    parser.ErrNoVersion,
+			name:          "Version",
+			filename:      "Truncated Project (Version).cpr",
+			expectedError: parser.ErrNoVersion,
 		},
 		{
-			Name:     "Release Date",
-			Filename: "Truncated Project (Release Date).cpr",
-			Error:    parser.ErrNoReleaseDate,
+			name:          "Release Date",
+			filename:      "Truncated Project (Release Date).cpr",
+			expectedError: parser.ErrNoReleaseDate,
 		},
 		{
-			Name:     "Plugin GUID",
-			Filename: "Truncated Project (Plugin GUID).cpr",
-			Error:    parser.ErrNoPluginGUID,
+			name:          "Plugin GUID",
+			filename:      "Truncated Project (Plugin GUID).cpr",
+			expectedError: parser.ErrNoPluginGUID,
 		},
 		{
-			Name:     "Plugin Name Tag",
-			Filename: "Truncated Project (Plugin Name Tag).cpr",
-			Error:    parser.ErrNoPluginName,
+			name:          "Plugin Name Tag",
+			filename:      "Truncated Project (Plugin Name Tag).cpr",
+			expectedError: parser.ErrNoPluginName,
 		},
 		{
-			Name:     "Plugin Name Value",
-			Filename: "Truncated Project (Plugin Name Value).cpr",
-			Error:    parser.ErrNoPluginName,
+			name:          "Plugin Name Value",
+			filename:      "Truncated Project (Plugin Name Value).cpr",
+			expectedError: parser.ErrNoPluginName,
 		},
 		{
-			Name:     "Tag After Plugin Name",
-			Filename: "Truncated Project (Tag After Plugin Name).cpr",
-			Error:    parser.ErrNoTokenAfterPluginName,
+			name:          "Tag After Plugin Name",
+			filename:      "Truncated Project (Tag After Plugin Name).cpr",
+			expectedError: parser.ErrNoTokenAfterPluginName,
 		},
 	}
 
 	for _, tc := range testCases {
 		tc := tc
 
-		t.Run(tc.Name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			projectBytes, err := os.ReadFile(filepath.Join("testdata", tc.Filename))
+			projectBytes, err := os.ReadFile(filepath.Join("testdata", tc.filename))
 			require.NoError(t, err)
 
 			reader := parser.NewReader(projectBytes)
 			project, err := reader.GetProjectDetails()
 
-			require.ErrorIs(t, err, tc.Error)
+			require.ErrorIs(t, err, tc.expectedError)
 			require.Nil(t, project)
 		})
 	}
