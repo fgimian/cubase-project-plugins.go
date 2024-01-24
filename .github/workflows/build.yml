@@ -3,7 +3,6 @@ name: Build
 on: [push, pull_request]
 
 jobs:
-
   build:
     strategy:
       matrix:
@@ -12,35 +11,35 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Setup Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: 1.21
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
 
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: v1.55.2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.55.2
 
-    - name: Setup Just
-      uses: extractions/setup-just@v1
+      - name: Setup Just
+        uses: extractions/setup-just@v1
 
-    - name: Lint
-      run: just lint
+      - name: Lint
+        run: just lint
 
-    - name: Test
-      run: just test
+      - name: Test
+        run: just test
 
-    - name: Build
-      run: just build
+      - name: Build
+        run: just build
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: coverage.out
-        fail_ci_if_error: true
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.out
+          fail_ci_if_error: true
