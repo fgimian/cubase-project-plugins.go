@@ -1,7 +1,5 @@
 package parser
 
-type Nothing struct{}
-
 // Contains information about the Cubase version used to create the project.
 type Metadata struct {
 	Application  string // application name (this is always "Cubase")

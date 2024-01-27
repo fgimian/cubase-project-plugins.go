@@ -255,6 +255,11 @@ func TestGetProjectDetailsTruncated(t *testing.T) {
 			filename:      "Truncated Project (Tag After Plugin Name).cpr",
 			expectedError: parser.ErrNoTokenAfterPluginName,
 		},
+		{
+			name:          "Original Plugin Name",
+			filename:      "Truncated Project (Original Plugin Name).cpr",
+			expectedError: parser.ErrNoOriginalPluginName,
+		},
 	}
 
 	for _, tc := range testCases {
