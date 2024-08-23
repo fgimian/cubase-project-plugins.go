@@ -189,9 +189,9 @@ func (r *Reader) searchPlugin(index int) (*Plugin, int, error) {
 		name, readBytes, err = r.getToken(index)
 		if err != nil {
 			return nil, 0, ErrNoOriginalPluginName
-		} else {
-			index += readBytes
 		}
+
+		index += readBytes
 	}
 
 	plugin := Plugin{GUID: guid, Name: name}

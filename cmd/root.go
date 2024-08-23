@@ -74,7 +74,7 @@ var rootCmd = &cobra.Command{
 		for _, projectPath := range args {
 			err := filepath.Walk(
 				projectPath,
-				func(path string, info fs.FileInfo, err error) error {
+				func(path string, _ fs.FileInfo, err error) error {
 					if err != nil || filepath.Ext(path) != ".cpr" {
 						return nil
 					}

@@ -1,6 +1,6 @@
 ---
 run:
-  deadline: 5m
+  timeout: 5m
 
 linters:
   presets:
@@ -33,7 +33,7 @@ linters:
     # Allow TODOs in the codebase.
     - godox
     # Disable magic number checks which force all numbers to be constants.
-    - gomnd
+    - mnd
     # Allow for named returns.
     - nonamedreturns
     # Do not enforce a new line before all return statements.
