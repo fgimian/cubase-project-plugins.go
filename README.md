@@ -3,6 +3,10 @@
 This project will analyse a directory containing Cubase projects recursively and show the version
 of Cubase the project was created with along with a list all the plugins used (with their GUIDs).
 
+**Note**: This version of Cubase Project Plugins has been superseded by the
+[Rust implementation](https://github.com/fgimian/cubase-project-plugins) which yields around 30%
+better performance.
+
 ## Limitations
 
 The tool works for projects created in Cubase 4 or later.  Older projects (e.g. those created on
